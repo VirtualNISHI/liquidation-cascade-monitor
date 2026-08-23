@@ -6,5 +6,5 @@
 PROJECT_DIR=/srv/liquidation-cascade-monitor
 PYTHON=/srv/liquidation-cascade-monitor/.venv/bin/python
 
-# 4-hourly post (UTC 03,07,11,15,19,23 = JST 12,16,20,0,4,8)
-0 3,7,11,15,19,23 * * * cd $PROJECT_DIR && PYTHONUTF8=1 $PYTHON scripts/run.py >> $PROJECT_DIR/data/post.log 2>&1
+# 2-hourly post (UTC 00,02,04,06,08,10,12,14,16,18,20,22 = JST 09,11,13,15,17,19,21,23,01,03,05,07)
+0 */2 * * * cd $PROJECT_DIR && PYTHONUTF8=1 $PYTHON scripts/run.py >> $PROJECT_DIR/data/post.log 2>&1

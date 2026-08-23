@@ -37,6 +37,7 @@ def main() -> None:
         f"oi_24h={'set' if oi_24h else 'cold'} smart={snap.smart_money_net}"
     )
     distribute.post_x(out, caption, live=True)
+    distribute.post_discord(out, caption, live=True)
 
 
 if __name__ == "__main__":

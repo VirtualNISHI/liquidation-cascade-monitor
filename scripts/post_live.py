@@ -30,6 +30,7 @@ def main() -> None:
     ap.add_argument("--snapshot", default="out/cache/snapshot_0_7.json")
     ap.add_argument("--out", default="out/liqmap_btc_live.png")
     ap.add_argument("--post-x", action="store_true")
+    ap.add_argument("--post-discord", action="store_true")
     ap.add_argument("--llm", action="store_true", help="LLM commentary (Gemini->OpenAI->Grok, template fallback)")
     args = ap.parse_args()
 
@@ -51,9 +52,13 @@ def main() -> None:
     if args.post_x:
         tid = distribute.post_x(path, cap, live=True)
         if tid:
-            print(f"POSTED -> https://x.com/i/web/status/{tid}")
-    else:
-        print("(preview only — pass --post-x to publish)")
+            print(f"POSTED (X) -> https://x.com/i/web/status/{tid}")
+    if args.post_discord:
+        mid = distribute.post_discord(path, cap, live=True)
+        if mid:
+            print(f"POSTED (Discord) -> message id {mid}")
+    if not args.post_x and not args.post_discord:
+        print("(preview only — pass --post-x / --post-discord to publish)")
 
 
 if __name__ == "__main__":

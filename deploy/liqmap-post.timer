@@ -1,10 +1,10 @@
 [Unit]
-Description=Run liqmap-post every 4 hours (6/day)
+Description=Run liqmap-post every 2 hours (12/day)
 
 [Timer]
-# Every 4h. Assumes the server clock is UTC -> 03,07,11,15,19,23 UTC
-# (= JST 12,16,20,0,4,8). Adjust if the server is on another timezone.
-OnCalendar=*-*-* 03/4:00:00
+# Every 2h. Assumes the server clock is UTC -> 00,02,04,06,08,10,12,14,16,18,20,22 UTC
+# (= JST 09,11,13,15,17,19,21,23,01,03,05,07). Adjust if the server is on another timezone.
+OnCalendar=*-*-* 00/2:00:00
 RandomizedDelaySec=120
 Persistent=true
 Unit=liqmap-post.service

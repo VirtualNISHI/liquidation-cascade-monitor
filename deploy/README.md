@@ -29,9 +29,10 @@ sudo -u liqmap mkdir -p data out
 # Japanese font for rendering (if not already present)
 sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
 
-# .env — X + LLM keys (reuse the same values your other bots use)
+# .env — X + Discord + LLM keys (reuse the same values your other bots use)
 sudo -u liqmap cp .env.example .env
-sudo -u liqmap $EDITOR .env   # fill X_API_KEY/SECRET/ACCESS_TOKEN/ACCESS_SECRET, GEMINI_API_KEY, OPENAI_API_KEY, XAI_API_KEY
+sudo -u liqmap $EDITOR .env   # fill X_API_KEY/SECRET/ACCESS_TOKEN/ACCESS_SECRET, DISCORD_WEBHOOK_URL,
+                              # GEMINI_API_KEY, OPENAI_API_KEY, XAI_API_KEY
 
 # Smoke test WITHOUT posting (renders to out/, prints bias)
 sudo -u liqmap PYTHONUTF8=1 .venv/bin/python scripts/generate.py --source live --max-addresses 4000 --llm
@@ -63,6 +64,6 @@ gh workflow disable post-liquidation-map -R VirtualNISHI/liquidation-cascade-mon
 ```
 
 ## Notes
-- `OnCalendar` uses the server timezone; the file assumes UTC (03/4 → 03,07,11,15,19,23 UTC).
+- `OnCalendar` uses the server timezone; the file assumes UTC (00/2 → 00,02,04,06,08,10,12,14,16,18,20,22 UTC = 12/day).
 - Bias C2 (OI velocity) activates after ~24h once `out/cache/oi_history.json` accumulates.
 - To update: `sudo -u liqmap git -C /srv/liquidation-cascade-monitor pull` (timer picks it up next run).
