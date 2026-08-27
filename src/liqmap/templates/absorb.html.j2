@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --txt: #eef2fa;
+    --sec: #aab4c8;
+    --mut: #7a86a0;
+    --grn: #35e0a1;
+    --cyn: #35cfe0;
+    --amb: #ffc94d;
+    --red: #ff5c7c;
+    --blu: #3fb9ec;
+    --org: #f5a52c;
+    --line: rgba(255,255,255,0.08);
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+  html, body { width: 1200px; }
+  body {
+    font-family: 'Inter', 'Noto Sans JP', system-ui, sans-serif;
+    color: var(--txt);
+    -webkit-font-smoothing: antialiased;
+    background: #050810;
+  }
+  #card {
+    width: 1200px;
+    padding: 26px 28px 16px;
+    border-radius: 18px;
+    border: 1px solid #1a2338;
+    background:
+      radial-gradient(900px 420px at 10% -6%, #131e36 0%, rgba(19,30,54,0) 55%),
+      radial-gradient(760px 560px at 100% 115%, #101830 0%, rgba(16,24,48,0) 50%),
+      linear-gradient(158deg, #0a101f 0%, #070b16 100%);
+  }
+
+  /* ---- header ---- */
+  .hd1 { display: flex; align-items: center; justify-content: space-between; }
+  .titlebox { display: flex; align-items: center; gap: 14px; }
+  .accent {
+    width: 6px; height: 40px; border-radius: 3px;
+    background: linear-gradient(180deg, #2bafe6, #f09f28);
+    box-shadow: 0 0 14px rgba(63,185,236,.45);
+  }
+  .icon {
+    width: 42px; height: 42px; border-radius: 11px; background: #131c30;
+    border: 1px solid #232f4a; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-family: 'Segoe UI Emoji', 'Noto Sans JP', sans-serif;
+  }
+  h1 { font-size: 36px; font-weight: 700; letter-spacing: .5px; line-height: 1; }
+  .step { font-size: 12.5px; color: var(--mut); margin-left: 10px; font-family: var(--mono); }
+  .subtitle { font-size: 13.5px; color: var(--sec); margin-top: 10px; }
+  .pill {
+    font-size: 14.5px; font-weight: 700; padding: 7px 16px; border-radius: 999px;
+    margin-left: 6px; white-space: nowrap;
+  }
+  .pill.good { color: var(--grn); border: 1px solid rgba(53,224,161,.45); background: rgba(53,224,161,.08); }
+  .pill.warn { color: var(--amb); border: 1px solid rgba(255,201,77,.5); background: rgba(255,201,77,.08); }
+  .chips { display: flex; align-items: center; gap: 7px; }
+  .chip {
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    padding: 4px 11px; border-radius: 7px; border: 1px solid #2a3550; color: #8b96ad;
+  }
+  .chip.on { background: #e9eef7; border-color: #e9eef7; color: #0a0f1e; }
+
+  /* ---- verdicts ---- */
+  .hd2 { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 16px; }
+  .v { font-size: 12.5px; color: var(--sec); }
+  .v .q { color: var(--mut); }
+  .v .a { display: block; margin-top: 5px; font-size: 15px; font-weight: 700; letter-spacing: .3px; }
+  .v.right { text-align: right; }
+  .a.ok-dn, .a.ok-up { color: var(--grn); }
+  .a.ng { color: var(--amb); }
+
+  /* ---- column heads: which side is which ---- */
+  .colhead {
+    display: grid; grid-template-columns: 1fr 150px 1fr;
+    margin-top: 16px; padding-bottom: 9px; border-bottom: 1px solid var(--line);
+    align-items: end;
+  }
+  .ch-main { font-size: 14px; font-weight: 700; color: #d5deee; letter-spacing: .3px; }
+  .ch-sub { font-size: 11.5px; color: var(--mut); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .ch-r .ch-main, .ch-r .ch-sub { justify-content: flex-end; text-align: right; }
+  .ch-r .ch-sub { display: flex; }
+  .ch-c { text-align: center; font-size: 12px; color: var(--mut); }
+  .sw { width: 11px; height: 11px; border-radius: 3px; display: inline-block; flex: none; }
+  /* Direction colour language matches the 偏りモニター gauge:
+     上（踏み上げ）= green family, 下（下落カスケード）= red family.
+     板 is the softer neighbour hue: cyan above, orange below. */
+  .sw.ask { background: linear-gradient(90deg, #1279ad, #2bafe6); }
+  .sw.bid { background: linear-gradient(90deg, #b06a10, #f5a52c); }
+  .sw.sliq { background: linear-gradient(90deg, #12b87e, #2fd89b); }
+  .sw.lliq { background: linear-gradient(90deg, #e83a62, #b01438); }
+  .ch-gap { display: inline-block; width: 8px; }
+
+  /* ---- rows ---- */
+  .rows { margin-top: 7px; }
+  .row {
+    display: grid; grid-template-columns: 100px 1fr 150px 1fr 100px;
+    align-items: center; height: 29px; border-radius: 6px;
+  }
+  .row.cur {
+    height: 46px;
+    background: linear-gradient(90deg, rgba(255,201,77,.12), rgba(255,201,77,.04) 45%, rgba(255,201,77,.10));
+    box-shadow: inset 0 0 0 1px rgba(255,201,77,.28);
+  }
+
+  .val { font-family: var(--mono); font-size: 13px; font-weight: 600; color: #e6ecf7; white-space: nowrap; }
+  .val.l { text-align: left; }
+  .val.r { text-align: right; }
+
+  .zone { position: relative; height: 17px; margin: 0 12px; }
+  .bar { position: absolute; top: 1px; bottom: 1px; border-radius: 3px; }
+  .bar.lbar { right: 0; }
+  .bar.rbar { left: 0; }
+  .bar.ask { background: linear-gradient(90deg, #0d5f8e 0%, #2bafe6 100%); }
+  .bar.bid { background: linear-gradient(90deg, #6b3a06 0%, #f09f28 100%); }
+  .bar.sliq { background: linear-gradient(90deg, #2fd89b 0%, #0a6b4d 100%); }
+  .bar.lliq { background: linear-gradient(90deg, #ef476f 0%, #99102f 100%); }
+
+  .white {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    height: 5px; border-radius: 2.5px; background: #ffffff;
+    box-shadow: 0 0 5px rgba(255,255,255,.4);
+  }
+
+  .tag {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-size: 11px; font-weight: 700; color: var(--amb); white-space: nowrap;
+    text-shadow: 0 0 8px rgba(0,0,0,.9);
+  }
+  .tag::before { content: "\25C2 "; }
+
+  .px { text-align: center; line-height: 1.15; }
+  .px .p { font-family: var(--mono); font-size: 14px; font-weight: 700; }
+  .px .pc { font-family: var(--mono); font-size: 10.5px; color: var(--mut); }
+  .row.cur .px .p { color: var(--amb); }
+  .row.cur .px .pc { color: rgba(255,201,77,.75); }
+  .curlab {
+    font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; color: var(--amb);
+  }
+
+  /* ---- bias monitor strip ---- */
+  .biasbar {
+    display: flex; align-items: center; gap: 16px;
+    margin-top: 14px; padding: 11px 16px;
+    background: rgba(13,21,38,.75); border: 1px solid #1c2740; border-radius: 11px;
+  }
+  .bb-title { font-size: 13px; font-weight: 700; color: #d5deee; white-space: nowrap; }
+  .bb-score { font-family: var(--mono); font-size: 23px; font-weight: 700; line-height: 1; }
+  .bb-score.long { color: var(--red); }
+  .bb-score.short { color: var(--grn); }
+  .bb-score.neutral { color: var(--sec); }
+  .bb-max { font-size: 12px; color: var(--mut); margin-left: 2px; }
+  .bb-end { font-size: 10.5px; font-weight: 600; white-space: nowrap; }
+  .bb-end.l { color: #ff8fa8; }
+  .bb-end.r { color: #7ce8bd; }
+  .bb-gauge {
+    position: relative; flex: 1; height: 8px; border-radius: 999px;
+    background: linear-gradient(90deg, #ff4d6d 0%, #2a3550 50%, #33e09b 100%);
+  }
+  .bb-marker {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 4px; height: 18px; border-radius: 2px; background: #fff;
+    box-shadow: 0 0 8px rgba(255,255,255,.7);
+  }
+  .bb-verdict { font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .bb-verdict.long { color: #ff8fa8; }
+  .bb-verdict.short { color: #7ce8bd; }
+  .bb-verdict.neutral { color: var(--sec); }
+  .bb-state {
+    font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 999px;
+    border: 1px solid; white-space: nowrap;
+  }
+  .bb-state.s-calm { color: #8b96ad; border-color: #2a3550; }
+  .bb-state.s-watch { color: var(--amb); border-color: rgba(255,201,77,.5); }
+  .bb-state.s-fire { color: #ff5c7c; border-color: rgba(255,92,124,.6); background: rgba(255,92,124,.08); }
+
+  /* ---- footer ---- */
+  footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 11px; padding-top: 10px; border-top: 1px solid var(--line);
+    font-size: 11.5px; color: var(--mut);
+  }
+  .lg { display: flex; align-items: center; gap: 8px; }
+  .wsw { width: 16px; height: 4px; border-radius: 2px; background: #fff; box-shadow: 0 0 4px rgba(255,255,255,.4); }
+</style>
+</head>
+<body>
+<div id="card">
+
+  <div class="hd1">
+    <div class="titlebox">
+      <div class="accent"></div>
+      <div class="icon">&#9878;</div>
+      <h1>BTC吸収力モニター</h1>
+      <span class="pill {{ 'warn' if headline.warn else 'good' }}">{{ headline.text }}</span>
+    </div>
+    <div class="chips">
+      <span class="chip">&#177;5%</span>
+      <span class="chip on">{{ range_label }}</span>
+    </div>
+  </div>
+  <div class="subtitle">板 &#215; 清算 ── 暴落も踏み上げも、どこで止まる？　板（＝受け止める壁）と強制清算（＝カスケードの燃料）を現在値から累積して比較</div>
+
+  <div class="hd2">
+    <div class="v">
+      <span class="q">下落側：ロング清算が買い板を超える水準</span>
+      <span class="a {{ 'ok-dn' if verdict_dn.ok else 'ng' }}">{{ verdict_dn.text }}</span>
+    </div>
+    <div class="v right">
+      <span class="q">上昇側：ショート清算が売り板を超える水準</span>
+      <span class="a {{ 'ok-up' if verdict_up.ok else 'ng' }}">{{ verdict_up.text }}</span>
+    </div>
+  </div>
+
+  <div class="colhead">
+    <div class="ch-l">
+      <div class="ch-main">&#8592; 板の累積 ＝ 受け止める壁</div>
+      <div class="ch-sub"><span class="sw ask"></span>上：売り板（上値の壁）<span class="ch-gap"></span><span class="sw bid"></span>下：買い板（下値の壁）</div>
+    </div>
+    <div class="ch-c">価格<br>（現値比）</div>
+    <div class="ch-r">
+      <div class="ch-main">清算の累積 ＝ カスケードの燃料 &#8594;</div>
+      <div class="ch-sub" style="justify-content:flex-end;"><span class="sw sliq"></span>上：ショート清算（踏み上げ圧）<span class="ch-gap"></span><span class="sw lliq"></span>下：ロング清算（投げ圧）</div>
+    </div>
+  </div>
+
+  <div class="rows">
+    {% for r in rows %}
+    <div class="row{{ ' cur' if r.zone == 'cur' else '' }}">
+      <div class="val l">{{ r.depth_label }}</div>
+      <div class="zone">
+        {% if r.depth_w > 0 %}
+        <div class="bar lbar {{ 'ask' if r.zone == 'up' else 'bid' }}" style="width:{{ r.depth_w }}%; min-width:2px;"></div>
+        {% endif %}
+        {% if r.white_side == 'left' and r.white_w > 0.15 %}
+        <div class="white" style="left:{{ r.white_pos }}%; width:{{ r.white_w }}%; min-width:2px;"></div>
+        {% endif %}
+      </div>
+      <div class="px">
+        {% if r.zone == 'cur' %}<div class="curlab">&#9656; 現在値 &#9666;</div>{% endif %}
+        <div class="p">{{ r.price_label }}</div>
+        <div class="pc">{{ r.pct_label }}</div>
+      </div>
+      <div class="zone">
+        {% if r.liq_w > 0 %}
+        <div class="bar rbar {{ 'sliq' if r.zone == 'up' else 'lliq' }}" style="width:{{ r.liq_w }}%; min-width:2px;"></div>
+        {% endif %}
+        {% if r.white_side == 'right' and r.white_w > 0.15 %}
+        <div class="white" style="left:{{ r.white_pos }}%; width:{{ r.white_w }}%; min-width:2px;"></div>
+        {% endif %}
+        {% if r.tag %}
+        <div class="tag" style="left:calc({{ r.liq_w }}% + 9px);">{{ r.tag }}</div>
+        {% endif %}
+      </div>
+      <div class="val r">{{ r.liq_label }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if bias %}
+  <div class="biasbar">
+    <span class="bb-title">偏りモニター</span>
+    <span><span class="bb-score {{ bias.side }}">{{ bias.score }}</span><span class="bb-max">/100</span></span>
+    <span class="bb-end l">ロング過熱＝下落警戒</span>
+    <div class="bb-gauge"><div class="bb-marker" style="left:{{ bias.gauge_pct }}%;"></div></div>
+    <span class="bb-end r">ショート過熱＝踏み上げ警戒</span>
+    <span class="bb-verdict {{ bias.side }}">{{ bias.label }}</span>
+    <span class="bb-state {{ 's-fire' if bias.state == '発火' else ('s-watch' if bias.state == '監視' else 's-calm') }}">{{ bias.state }}</span>
+  </div>
+  {% endif %}
+
+  <footer>
+    <div class="lg">
+      <span class="wsw"></span>
+      <span>白バー ＝ 吸収余力（板 − 清算）　左側にあれば板が優勢 ／ 右側なら清算が超過</span>
+      <span style="margin-left:14px;">{{ step_label }}・両サイド共通スケール</span>
+    </div>
+    <div>Hyperliquid Perps ／ 板 L2: {{ book_as_of }} ／ 清算: {{ liq_as_of }}</div>
+  </footer>
+
+</div>
+</body>
+</html>

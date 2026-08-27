@@ -39,6 +39,37 @@ def main() -> None:
     distribute.post_x(out, caption, live=True)
     distribute.post_discord(out, caption, live=True)
 
+    # ---- BTC吸収力モニター (absorb card) --------------------------------
+    # Reuses the SAME snapshot crawled above — no second scan; only two cheap
+    # extra API calls (L2 book + market ctx). Bias comes straight from the
+    # cascade card's evaluation so both cards in one slot always agree.
+    # Isolated so an absorb failure can never take down the cascade post.
+    try:
+        from dataclasses import asdict
+
+        from liqmap.absorb import (
+            bias_ctx,
+            build_absorb_caption,
+            build_context as build_absorb_context,
+            fetch_book,
+            render_absorb_png,
+        )
+
+        market, depth = fetch_book()
+        actx = build_absorb_context(
+            asdict(snap), market, depth,
+            bias=bias_ctx(m.bias_score, m.bias_state, m.bias_side, m.bias_label),
+        )
+        absorb_out = Path("out") / "liqmap_btc_absorb.png"
+        render_absorb_png(actx, absorb_out)
+        acap = build_absorb_caption(actx)
+        print(f"[absorb] {actx['headline']['text']} / 下={actx['verdict_dn']['text']} "
+              f"/ 上={actx['verdict_up']['text']}")
+        distribute.post_x(absorb_out, acap, live=True)
+        distribute.post_discord(absorb_out, acap, live=True)
+    except Exception as e:
+        print(f"[absorb] failed (cascade post unaffected): {type(e).__name__}: {e}")
+
 
 if __name__ == "__main__":
     main()
